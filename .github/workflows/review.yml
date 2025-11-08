@@ -19,7 +19,7 @@ jobs:
       - name: Run AI Academic Paper Reviewer
         uses: smkwlab/ai-academic-paper-reviewer@main
         with:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}   # 你的 Gemini 2.5 Pro Key
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}   # 你的 Gemini 2.5 Pro Key
           MODEL_CODE: "gemini-2.5-pro"                     # 使用 Gemini 2.5 Pro
           LANGUAGE: "Chinese"                              # 审稿语言
           REVIEW_MODE: "academic"                          # 审稿模式，学术深度
