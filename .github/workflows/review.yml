@@ -1,0 +1,23 @@
+name: AI Paper Review
+on:
+  push:
+    paths:
+      - '**.tex'
+      - '**.md'
+      - '**.pdf'
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Run AI Academic Paper Reviewer
+        uses: smkwlab/ai-academic-paper-reviewer@main
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          model: gpt-4o-mini
+          review_language: "Chinese"
+          review_level: "academic"
+          output_file: "AI_Review_Report.md"
