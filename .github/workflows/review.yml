@@ -1,6 +1,6 @@
 name: AI Paper Review
 
-# 恢复使用 'push' 触发器，这是您最初的设置
+# 保持您最初的 'push' 触发器，这最简单
 on:
   push:
     paths:
@@ -12,22 +12,24 @@ jobs:
   review:
     runs-on: ubuntu-latest
 
-    # 移除所有旧的 job-level 'env:'
-    
+    # ‼️ 关键修复：在 "job" 级别 (与 "steps:" 同级) 设置环境变量
+    # 这将绕过 "Unexpected input" 警告，并解决 "REPO is missing" 错误
+    env:
+      REPO: ${{ github.repository }}
+
     steps:
       # 1️⃣ 拉取仓库文件
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # ‼️ 移除所有旧的 "Debug" 步骤
+      # ‼️ 关键修复：移除了所有 "Debug" 步骤
       
       # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
       - name: Run AI Academic Paper Reviewer
         # 使用教程中的正确版本
         uses: toshi0806/ai-academic-paper-reviewer@v1 
         with:
-          # 响应 "REPO is missing" 错误，我们将其添加回来
-          REPO: ${{ github.repository }}
+          # ‼️ 关键修复：REPO 已从 "with:" 中移除
           
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
@@ -40,5 +42,8 @@ jobs:
           REVIEW_MODE: "ACADEMIC" # 使用教程中的大写
           EXCLUDE_PATHS: "" 
           
-          # v1 版本似乎不支持这个，先注释掉
+          # v1 版本似乎不支持这个，先移除
           # USE_SINGLE_COMMENT_REVIEW: true
+          
+        # ‼️ 关键修复：不再需要 step-level env:
+        # Action 会自动从上面的 job-level 继承 REPO 环境变量
