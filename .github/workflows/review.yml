@@ -1,69 +1,60 @@
 name: AI Paper Review
 
+# ‼️ 关键修复 1: 添加 'permissions'
+# 这是为了允许 Action 读取文件并写评论到 Pull Request
+permissions:
+  pull-requests: write
+  contents: read
+
+# ‼️ 关键修复 2: 更改触发器
+# 这个 Action 是为 "Pull Request" 设计的。
+# 它会在你创建 PR 或更新 PR 时运行。
 on:
-  push:
+  pull_request:
     paths:
       - '**.tex'
       - '**.md'
       - '**.pdf'
+    types: [opened, synchronize, reopened]
+  
+  # 也允许你手动运行
+  workflow_dispatch:
+
 jobs:
   review:
     runs-on: ubuntu-latest
-    
-    # ⬇️ ⬇️ ⬇️ 
-    # 关键修复：在 "job" 级别 (与 "steps:" 同级) 设置环境变量
-    env:
-      REPO: ${{ github.repository }}
-    # ⬆️ ⬆️ ⬆️
+
+    # ‼️ 关键修复 3: 移除了整个 job-level 'env: REPO:' 块
+    # (这个新 Action 不需要它)
 
     steps:
       # 1️⃣ 拉取仓库文件
       - name: Checkout Repository
         uses: actions/checkout@v3
-
-      # 2️⃣ 调试步骤 (现在它应该能读到值了)
-      - name: 🐞 Debug Environment Variables
-        run: |
-          echo "--- 检查 REPO 环境变量 ---"
-          echo "JOB-LEVEL REPO 变量的值是: [${{ env.REPO }}]"
-          echo "--- 检查 github.repository 变量 ---"
-          echo "github.repository 的值是: [${{ github.repository }}]"
-
-      # 3️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
-      - name: Run AI Academic Paper Reviewer
-        uses: smkwlab/ai-academic-paper-reviewer@main
+        # 需要获取 PR 的完整历史记录
         with:
-          # 保持这些不变
+          fetch-depth: 0 
+
+      # ‼️ 关键修复 4: 移除了 "Debug" 步骤 (不再需要)
+
+      # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
+      - name: Run AI Academic Paper Reviewer
+        # ‼️ 关键修复 5: 使用教程中正确的、稳定的 Action
+        uses: toshi0806/ai-academic-paper-reviewer@v1 
+        with:
+          # 这个 Action 不需要 REPO 变量
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }} 
+          
+          # 确保这指向您在 GitHub Secrets 中的 Key (您的是 GOOGLE_API_KEY)
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          
+          # --- 以下是您的个人设置 ---
           MODEL_CODE: "gemini-2.5-pro"
           LANGUAGE: "Chinese"
-          REVIEW_MODE: "academic"
-          USE_SINGLE_COMMENT_REVIEW: true
-          EXCLUDE_PATHS: ""
-        # ‼️ 注意：我们不再需要 step-level env: 了
-        # 因为它会从上面的 job-level 自动继承
-# jobs:
-#   review:
-#     runs-on: ubuntu-latest
-#     steps:
-#       # 1️⃣ 拉取仓库文件
-#       - name: Checkout Repository
-#         uses: actions/checkout@v3
-
-#       # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
-#       - name: Run AI Academic Paper Reviewer
-#         uses: smkwlab/ai-academic-paper-reviewer@main
-#         with:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           REPO: ${{ github.repository }}                   #github.repository 是一个 GitHub Actions 的标准变量，它会自动填充为 "您的用户名/您的仓库名"
-#           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}   # 你的 Gemini 2.5 Pro Key
           
-#           MODEL_CODE: "gemini-2.5-pro"                     # 使用 Gemini 2.5 Pro
-#           LANGUAGE: "Chinese"                              # 审稿语言
-#           REVIEW_MODE: "academic"                          # 审稿模式，学术深度
-#           USE_SINGLE_COMMENT_REVIEW: true                 # 合并为一条 Comment
-#           EXCLUDE_PATHS: ""                                # 可选，排除不审查的文件
-#         env:
-#           # ⬇️ 把它添加到 'env:' (环境变量) 部分
-#           REPO: ${{ github.repository }}
+          # ‼️ 关键修复 6: 使用教程中的 "ACADEMIC" (大写)
+          REVIEW_MODE: "ACADEMIC"
+          
+          # 注意： "USE_SINGLE_COMMENT_REVIEW" 似乎是 smkwlab 版本的功能
+          # v1 版本默认会将所有评论合并为一个，所以我们移除了这个选项。
+          EXCLUDE_PATHS: ""
