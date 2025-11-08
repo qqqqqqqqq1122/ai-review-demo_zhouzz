@@ -6,7 +6,6 @@ on:
       - '**.tex'
       - '**.md'
       - '**.pdf'
-
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -15,19 +14,50 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # ⬇️ ⬇️ ⬇️ 添加这个新的调试步骤
+      - name: 🐞 Debug Environment Variables
+        run: |
+          echo "--- 检查 REPO 环境变量 ---"
+          echo "REPO 变量的值是: [${{ env.REPO }}]"
+          echo "--- 检查 github.repository 变量 ---"
+          echo "github.repository 的值是: [${{ github.repository }}]"
+          echo "--- 检查传递给 Action 的 env.REPO ---"
+          echo "传入 AI Reviewer 的 REPO 是: [${{ env.REPO }}]"
+
       # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
       - name: Run AI Academic Paper Reviewer
         uses: smkwlab/ai-academic-paper-reviewer@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}                   #github.repository 是一个 GitHub Actions 的标准变量，它会自动填充为 "您的用户名/您的仓库名"
-          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}   # 你的 Gemini 2.5 Pro Key
-          
-          MODEL_CODE: "gemini-2.5-pro"                     # 使用 Gemini 2.5 Pro
-          LANGUAGE: "Chinese"                              # 审稿语言
-          REVIEW_MODE: "academic"                          # 审稿模式，学术深度
-          USE_SINGLE_COMMENT_REVIEW: true                 # 合并为一条 Comment
-          EXCLUDE_PATHS: ""                                # 可选，排除不审查的文件
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }} 
+          MODEL_CODE: "gemini-2.5-pro"
+          LANGUAGE: "Chinese"
+          REVIEW_MODE: "academic"
+          USE_SINGLE_COMMENT_REVIEW: true
+          EXCLUDE_PATHS: ""
         env:
-          # ⬇️ 把它添加到 'env:' (环境变量) 部分
           REPO: ${{ github.repository }}
+# jobs:
+#   review:
+#     runs-on: ubuntu-latest
+#     steps:
+#       # 1️⃣ 拉取仓库文件
+#       - name: Checkout Repository
+#         uses: actions/checkout@v3
+
+#       # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
+#       - name: Run AI Academic Paper Reviewer
+#         uses: smkwlab/ai-academic-paper-reviewer@main
+#         with:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           REPO: ${{ github.repository }}                   #github.repository 是一个 GitHub Actions 的标准变量，它会自动填充为 "您的用户名/您的仓库名"
+#           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}   # 你的 Gemini 2.5 Pro Key
+          
+#           MODEL_CODE: "gemini-2.5-pro"                     # 使用 Gemini 2.5 Pro
+#           LANGUAGE: "Chinese"                              # 审稿语言
+#           REVIEW_MODE: "academic"                          # 审稿模式，学术深度
+#           USE_SINGLE_COMMENT_REVIEW: true                 # 合并为一条 Comment
+#           EXCLUDE_PATHS: ""                                # 可选，排除不审查的文件
+#         env:
+#           # ⬇️ 把它添加到 'env:' (环境变量) 部分
+#           REPO: ${{ github.repository }}
