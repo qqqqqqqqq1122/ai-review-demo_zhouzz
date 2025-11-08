@@ -9,25 +9,31 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+    
+    # ⬇️ ⬇️ ⬇️ 
+    # 关键修复：在 "job" 级别 (与 "steps:" 同级) 设置环境变量
+    env:
+      REPO: ${{ github.repository }}
+    # ⬆️ ⬆️ ⬆️
+
     steps:
       # 1️⃣ 拉取仓库文件
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # ⬇️ ⬇️ ⬇️ 添加这个新的调试步骤
+      # 2️⃣ 调试步骤 (现在它应该能读到值了)
       - name: 🐞 Debug Environment Variables
         run: |
           echo "--- 检查 REPO 环境变量 ---"
-          echo "REPO 变量的值是: [${{ env.REPO }}]"
+          echo "JOB-LEVEL REPO 变量的值是: [${{ env.REPO }}]"
           echo "--- 检查 github.repository 变量 ---"
           echo "github.repository 的值是: [${{ github.repository }}]"
-          echo "--- 检查传递给 Action 的 env.REPO ---"
-          echo "传入 AI Reviewer 的 REPO 是: [${{ env.REPO }}]"
 
-      # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
+      # 3️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
       - name: Run AI Academic Paper Reviewer
         uses: smkwlab/ai-academic-paper-reviewer@main
         with:
+          # 保持这些不变
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }} 
           MODEL_CODE: "gemini-2.5-pro"
@@ -35,8 +41,8 @@ jobs:
           REVIEW_MODE: "academic"
           USE_SINGLE_COMMENT_REVIEW: true
           EXCLUDE_PATHS: ""
-        env:
-          REPO: ${{ github.repository }}
+        # ‼️ 注意：我们不再需要 step-level env: 了
+        # 因为它会从上面的 job-level 自动继承
 # jobs:
 #   review:
 #     runs-on: ubuntu-latest
