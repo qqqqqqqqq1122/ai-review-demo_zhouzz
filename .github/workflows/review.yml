@@ -1,6 +1,4 @@
 name: AI Paper Review
-
-# 保持您最初的 'push' 触发器，这最简单
 on:
   push:
     paths:
@@ -12,38 +10,26 @@ jobs:
   review:
     runs-on: ubuntu-latest
 
-    # ‼️ 关键修复：在 "job" 级别 (与 "steps:" 同级) 设置环境变量
-    # 这将绕过 "Unexpected input" 警告，并解决 "REPO is missing" 错误
-    env:
-      REPO: ${{ github.repository }}
-
     steps:
-      # 1️⃣ 拉取仓库文件
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # ‼️ 关键修复：移除了所有 "Debug" 步骤
-      
-      # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
+      - name: Export REPO
+        run: echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
+
+      - name: Debug REPO
+        run: |
+          echo "Expect REPO=${{ github.repository }}"
+          echo "Actual REPO=$REPO"
+          env | grep -i REPO || true
+
       - name: Run AI Academic Paper Reviewer
-        # 使用教程中的正确版本
-        uses: toshi0806/ai-academic-paper-reviewer@v1 
+        uses: toshi0806/ai-academic-paper-reviewer@v1
         with:
-          # ‼️ 关键修复：REPO 已从 "with:" 中移除
-          
+          repo: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-          # 确保这指向您在 GitHub Secrets 中的 Key
           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          
-          # --- 以下是您的个人设置 ---
           MODEL_CODE: "gemini-2.5-pro"
           LANGUAGE: "Chinese"
-          REVIEW_MODE: "ACADEMIC" # 使用教程中的大写
-          EXCLUDE_PATHS: "" 
-          
-          # v1 版本似乎不支持这个，先移除
-          # USE_SINGLE_COMMENT_REVIEW: true
-          
-        # ‼️ 关键修复：不再需要 step-level env:
-        # Action 会自动从上面的 job-level 继承 REPO 环境变量
+          REVIEW_MODE: "ACADEMIC"
+          EXCLUDE_PATHS: ""
