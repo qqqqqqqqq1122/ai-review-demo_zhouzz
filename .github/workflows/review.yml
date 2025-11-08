@@ -1,4 +1,5 @@
 name: AI Paper Review
+
 on:
   push:
     paths:
@@ -14,10 +15,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Export REPO
+      # 可选：将 REPO 写入后续步骤环境（作为备选保障）
+      - name: Export REPO via GITHUB_ENV
         run: echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
 
-      - name: Debug REPO
+      # 可选：调试，确认在调用 Action 前 REPO 存在
+      - name: Debug REPO before action
         run: |
           echo "Expect REPO=${{ github.repository }}"
           echo "Actual REPO=$REPO"
@@ -26,10 +29,15 @@ jobs:
       - name: Run AI Academic Paper Reviewer
         uses: toshi0806/ai-academic-paper-reviewer@v1
         with:
-          repo: ${{ github.repository }}
+          # 注意：不要再传 'repo'，此 Action 不支持该输入
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           MODEL_CODE: "gemini-2.5-pro"
           LANGUAGE: "Chinese"
           REVIEW_MODE: "ACADEMIC"
           EXCLUDE_PATHS: ""
+          # 如需单条评论模式（日志显示此输入被支持），可开启：
+          # USE_SINGLE_COMMENT_REVIEW: true
+        env:
+          # 关键：显式为该 Action 步骤注入 REPO，避免继承丢失
+          REPO: ${{ github.repository }}
