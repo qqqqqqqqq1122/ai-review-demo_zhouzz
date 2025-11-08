@@ -1,4 +1,5 @@
 name: AI Paper Review
+
 on:
   push:
     paths:
@@ -10,14 +11,17 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ 拉取仓库文件
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # 2️⃣ 调用 Gemini 2.5 Pro 进行 AI 审稿
       - name: Run AI Academic Paper Reviewer
         uses: smkwlab/ai-academic-paper-reviewer@main
         with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          model: gpt-4o-mini
-          review_language: "Chinese"
-          review_level: "academic"
-          output_file: "AI_Review_Report.md"
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}   # 你的 Gemini 2.5 Pro Key
+          MODEL_CODE: "gemini-2.5-pro"                     # 使用 Gemini 2.5 Pro
+          LANGUAGE: "Chinese"                              # 审稿语言
+          REVIEW_MODE: "academic"                          # 审稿模式，学术深度
+          USE_SINGLE_COMMENT_REVIEW: true                 # 合并为一条 Comment
+          EXCLUDE_PATHS: ""                                # 可选，排除不审查的文件
