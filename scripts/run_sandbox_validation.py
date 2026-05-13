@@ -72,6 +72,7 @@ def integrated_gradients_joint(
         grad_x_acc += gx
         grad_e_acc += ge
 
+    # We sample both endpoints alpha=0 and alpha=1, so the mean uses (steps + 1) points.
     avg_grad_x = grad_x_acc / (steps + 1)
     avg_grad_e = grad_e_acc / (steps + 1)
 
