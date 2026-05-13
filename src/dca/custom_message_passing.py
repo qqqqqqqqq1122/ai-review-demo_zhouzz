@@ -22,6 +22,16 @@ class DualChannelMessagePassing(MessagePassing):
         super().__init__(**kwargs)
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor, edge_attr: torch.Tensor) -> torch.Tensor:
+        """Aggregate weighted neighbor messages.
+
+        Args:
+            x: Node feature matrix.
+            edge_index: Graph connectivity in COO format.
+            edge_attr: Edge weights/attributes aligned with edge_index columns.
+
+        Returns:
+            Aggregated node embedding tensor.
+        """
         if x.requires_grad:
             x.retain_grad()
         if edge_attr.requires_grad:

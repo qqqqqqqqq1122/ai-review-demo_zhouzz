@@ -33,8 +33,31 @@ class TinyDynamicGNN(nn.Module):
         return self.readout(out).squeeze(-1)
 
 
-def integrated_gradients_joint(model: nn.Module, edge_index: torch.Tensor, x0: torch.Tensor, x1: torch.Tensor, e0: torch.Tensor, e1: torch.Tensor, target_node: int, steps: int = 50):
-    """Compute joint integrated gradients for feature and structure channels."""
+def integrated_gradients_joint(
+    model: nn.Module,
+    edge_index: torch.Tensor,
+    x0: torch.Tensor,
+    x1: torch.Tensor,
+    e0: torch.Tensor,
+    e1: torch.Tensor,
+    target_node: int,
+    steps: int = 50,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Compute joint integrated gradients for feature and structure channels.
+
+    Args:
+        model: Dynamic GNN model.
+        edge_index: Graph connectivity tensor.
+        x0: Baseline node features.
+        x1: Target node features.
+        e0: Baseline edge attributes.
+        e1: Target edge attributes.
+        target_node: Node index whose prediction is explained.
+        steps: Number of path discretization steps.
+
+    Returns:
+        (attr_x, attr_e): feature-channel and edge-channel attribution tensors.
+    """
     dx = x1 - x0
     de = e1 - e0
 

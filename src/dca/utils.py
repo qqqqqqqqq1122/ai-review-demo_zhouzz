@@ -54,7 +54,13 @@ def linear_interpolation_path(
     edge_attr1: torch.Tensor,
     steps: int = 50,
 ) -> Generator[tuple[torch.Tensor, torch.Tensor, torch.Tensor], None, None]:
-    """Yield linear path points from baseline graph G0 to target graph G1."""
+    """Yield linear path points from baseline graph G0 to target graph G1.
+
+    Returns:
+        Tuples of (alpha, x_alpha, edge_alpha), where alpha is the interpolation
+        coefficient, x_alpha is interpolated node features, and edge_alpha is
+        interpolated edge attributes.
+    """
 
     if steps <= 0:
         raise ValueError("steps must be positive")

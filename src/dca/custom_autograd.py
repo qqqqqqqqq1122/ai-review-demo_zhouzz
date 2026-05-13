@@ -10,6 +10,14 @@ class AttributionSumGate(torch.autograd.Function):
 
     @staticmethod
     def forward(ctx, feature_attr: torch.Tensor, edge_attr: torch.Tensor, output_diff: torch.Tensor, atol: float):
+        """Store attribution sums for backward-time summation-to-delta checks.
+
+        Args:
+            feature_attr: Feature-channel attribution tensor.
+            edge_attr: Structure-channel attribution tensor.
+            output_diff: Target prediction delta to match.
+            atol: Absolute tolerance used in assertion.
+        """
         total_attr = feature_attr.sum() + edge_attr.sum()
         ctx.save_for_backward(total_attr.detach(), output_diff.detach())
         ctx.atol = float(atol)

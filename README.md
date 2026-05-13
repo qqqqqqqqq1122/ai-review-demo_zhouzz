@@ -4,13 +4,13 @@
 
 Implemented minimal scaffold for:
 
-- Phase 1: math draft with LaTeX proof in `/home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz/docs/method_phase1.md`
-- Phase 2: modular code in `/home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz/src/dca`
-- 5-node sandbox verification in `/home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz/scripts/run_sandbox_validation.py`
+- Phase 1: math draft with LaTeX proof in `docs/method_phase1.md`
+- Phase 2: modular code in `src/dca`
+- 5-node sandbox verification in `scripts/run_sandbox_validation.py`
 
 ### Run sandbox check
 
 ```bash
-cd /home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz
+# run from repository root
 python3 scripts/run_sandbox_validation.py
 ```
