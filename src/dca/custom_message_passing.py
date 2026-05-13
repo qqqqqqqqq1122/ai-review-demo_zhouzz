@@ -9,7 +9,7 @@ try:
     from torch_geometric.nn import MessagePassing
 
     _HAS_PYG = True
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     MessagePassing = nn.Module
     _HAS_PYG = False
 

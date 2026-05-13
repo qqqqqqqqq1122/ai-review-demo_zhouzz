@@ -34,6 +34,7 @@ class TinyDynamicGNN(nn.Module):
 
 
 def integrated_gradients_joint(model: nn.Module, edge_index: torch.Tensor, x0: torch.Tensor, x1: torch.Tensor, e0: torch.Tensor, e1: torch.Tensor, target_node: int, steps: int = 50):
+    """Compute joint integrated gradients for feature and structure channels."""
     dx = x1 - x0
     de = e1 - e0
 
@@ -90,9 +91,9 @@ def main():
     gated.backward()
 
     print(f"Target node: {target_node}")
-    print(f"Model_output_diff: {output_diff.item():.12f}")
-    print(f"Attribute_sum: {attribute_sum.item():.12f}")
-    print(f"Abs_error: {error:.12e}")
+    print(f"model_output_diff: {output_diff.item():.12f}")
+    print(f"attribute_sum: {attribute_sum.item():.12f}")
+    print(f"abs_error: {error:.12e}")
 
     assert error <= 1e-6, f"Summation-to-delta failed: error={error:.3e}"
     print("PASS: Summation-to-delta holds within 1e-6.")

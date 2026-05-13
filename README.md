@@ -12,5 +12,5 @@ Implemented minimal scaffold for:
 
 ```bash
 cd /home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz
-python3 /home/runner/work/ai-review-demo_zhouzz/ai-review-demo_zhouzz/scripts/run_sandbox_validation.py
+python3 scripts/run_sandbox_validation.py
 ```

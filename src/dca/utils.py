@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Generator
 
 import torch
 
@@ -29,7 +30,7 @@ def build_financial_sandbox_graph() -> FinancialSandboxGraph:
         dtype=torch.long,
     )
 
-    # node feature: liquidity buffer
+    # Node feature: institution liquidity buffer ratio in [0, 1].
     x0 = torch.tensor([[0.62], [0.55], [0.48], [0.65], [0.52]], dtype=torch.float64)
     x1 = torch.tensor([[0.58], [0.49], [0.51], [0.60], [0.56]], dtype=torch.float64)
 
@@ -52,7 +53,7 @@ def linear_interpolation_path(
     edge_attr0: torch.Tensor,
     edge_attr1: torch.Tensor,
     steps: int = 50,
-):
+) -> Generator[tuple[torch.Tensor, torch.Tensor, torch.Tensor], None, None]:
     """Yield linear path points from baseline graph G0 to target graph G1."""
 
     if steps <= 0:
